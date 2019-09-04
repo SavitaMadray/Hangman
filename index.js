@@ -2,35 +2,38 @@
 const content = document.getElementById("content")
 const control = document.getElementById("control")
 const message = document.getElementById("message")
+const heading = document.getElementById("heading")
 
 // Events 
 
 control.addEventListener("click", (event) => {
     //changes the state after startgame button is clicked
     if (event.target.matches(".js-start")) {
-        const word = getWord()
-        state.play = true
-        state.selectedWord = word
-        state.displayWord = createBlanks(word)
-        state.guesses = []
-        state.turns = 6
-        render()
-        return;
+        start()
     }
     if (event.target.matches(".js-submit")) {
-        const getInput = document.getElementsByClassName("js-input")[0]
-        let input = getInput.value
-        checkLetters(input)
-
-
+        submit()
+    }
+    if (event.target.matches(".js-reset")){
+        start()
     }
 })
-
 
 //Helpers
 
 const getWord = () => {
     return state.words[Math.floor(Math.random() * state.words.length)];
+}
+
+const start = () => {
+    const word = getWord()
+    state.play = true
+    state.selectedWord = word
+    state.displayWord = createBlanks(word)
+    state.guesses = []
+    state.turns = 6
+    render()
+    return;
 }
 
 const createBlanks = (word) => {
@@ -41,6 +44,12 @@ const createBlanks = (word) => {
     return displayWord
 }
 
+const submit = () => {
+    const getInput = document.getElementsByClassName("js-input")[0]
+    let input = getInput.value
+    checkLetters(input)
+
+}
 const renderContent = () => {
     return `
      <h4>Remaining Turns:${state.turns}</h4>
@@ -53,7 +62,10 @@ const renderControl = () => {
     return `
     <label>Please enter your letter</label>
     <input type="text" class= "js-input"> 
-    <button class ="js-submit">Submit</button>`
+    <button class ="js-submit">Submit</button>
+    <br/>
+    <label>Click to choose a new word</label>
+    <button class ="js-reset">Reset</button>`
 }
 
 const checkLetters = (input) => {
@@ -70,6 +82,7 @@ const checkLetters = (input) => {
         state.turns = state.turns - 1
         state.guesses.push(input)
     }
+  
     render()
 
 }
@@ -87,8 +100,6 @@ const state = {
 
 
 
-
-
 //Render
 const render = () => {
     if (state.play === false) {
@@ -97,10 +108,23 @@ const render = () => {
         message.innerText = "Press start to begin your game"
         return;
     }
-    content.innerHTML = renderContent()
-    control.innerHTML = renderControl()
-    message.innerText = ""
-    console.log(state);
+    if(state.turns > 0){
+        heading.innerHTML = "Hangman Game"
+        content.innerHTML = renderContent()
+        control.innerHTML = renderControl()
+        message.innerText = ""
+        console.log(state);
+     }else {
+        heading.innerHTML = "You've Lost!!!"
+        content.innerHTML = ""
+        control.innerHTML =  `<label>Click to restart game</label>
+        <button class ="js-reset">Restart</button>`
+        message.innerText = ""
+       
+
+     }
+
+    
 
 }
 render()
